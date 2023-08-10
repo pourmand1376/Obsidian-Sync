@@ -53,11 +53,6 @@ clone_repo() {
   echo "Obsidian Folder: ~/storage/downloads/$folder"
   echo "Git Url: $git_url"
 
-  # Check if folder name provided
-  if [ -n "$2" ]; then
-    folder="$2"
-  fi
-
   cd "~/"
   mkdir -p "~/$folder"
   git --git-dir "~/$folder" --work-tree "~/storage/downloads/$folder" clone "$git_url" 
