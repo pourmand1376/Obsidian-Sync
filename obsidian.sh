@@ -229,7 +229,9 @@ while true; do
                     fi
                 done
                 if [ -d "~/storage/downloads/$folder_name" ]; then
-                    
+                    add_gitignore_entries "$folder_name"
+                    add_gitattributes_entry "$folder_name"
+                    remove_files_from_git "$folder_name"
                 else
                     echo "Folder ~/storage/downloads/$folder_name doesn't exist. You should clone the repo again."
                 fi
