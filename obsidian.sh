@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.3.1"
+echo "Script Version 0.3.2"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -139,6 +139,128 @@ function write_to_file_if_not_exists()
     fi
 }
 
+function configure_git_and_ssh_keys()
+{
+    while true; do
+        read -p "Please Enter your name: " name
+        if [[ -z "$name" ]]; then
+            echo "Invalid input. Please enter a non-empty name."
+        else
+            echo "Your submitted name: $name"
+            break
+        fi
+    done
+    while true; do
+        read -p "Please Enter your Email: " email
+        if [[ $email =~ ^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$ ]]; then
+            echo "Your submitted email: $email"
+            break
+        else
+            echo "Invalid input. Please enter a valid email."
+        fi
+    done
+    echo "-------------------------------------"
+    configure_git "$name" "$email"
+    generate_ssh_key "$email"
+}
+function clone_obsidian_repo()
+{
+    while true; do
+        echo "Please Enter your git url: "
+        read git_url
+        if [[ -z "$git_url" ]]; then
+            echo "Invalid input. Please enter a non-empty git url."
+        else
+            echo "Your submitted git url: $git_url"
+            break
+        fi
+    done
+    base_name=$(basename $git_url)
+    folder_name=${base_name%.*}
+    clone_repo "$folder_name" "$git_url"
+}
+function optimize_repo_for_mobile()
+{
+    folders=()
+    i=1
+    for dir in $HOME_PATH/*; do
+        if [ -d "$dir" ]; then
+            if git -C "$dir" status &> /dev/null
+            then
+                folder_name=$(basename "$dir")
+                folders+=("$folder_name")
+                echo "$i) $folder_name"
+                ((i++))
+            fi
+        fi
+    done
+    echo "Now which repository do you want to optimize?"
+    echo "Select a folder:"
+    read choice
+    folder="${folders[$choice-1]}"
+    echo "You selected $folder"
+    if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
+        if git -C "$HOME_PATH/$folder" status &> /dev/null
+        then
+            add_gitignore_entries "$folder"
+            add_gitattributes_entry "$folder"
+            remove_files_from_git "$folder"
+        else
+            echo "The $folder folder is not a Git repository"
+        fi
+    else
+        echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
+    fi
+}
+function create_alias_and_git_scripts()
+{
+    touch "$HOME_PATH/.bashrc"
+    touch "$HOME_PATH/.obsidian_script"
+    touch "$HOME_PATH/.profile"
+    echo '
+function sync_obsidian
+{
+cd "$1"
+git add .
+git commit -m "Android Commit"
+git fetch
+git merge --no-edit
+git add .
+git commit -m "automerge android"
+git push
+echo "Sync is finished"
+sleep 2
+    }' > "$HOME_PATH/.obsidian_script"
+    # append this to file only if it is not already there
+
+    write_to_file_if_not_exists "$HOME_PATH/.obsidian_script" "$HOME_PATH/.profile"
+    write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
+
+
+    folders=()
+    i=1
+    for dir in $HOME_PATH/*; do
+        if [ -d "$dir" ]; then
+            if git -C "$dir" status &> /dev/null
+            then
+                folder_name=$(basename "$dir")
+                folders+=("$folder_name")
+                echo "$i) $folder_name"
+                ((i++))
+            fi
+        fi
+    done
+    echo "Now which repository do you want to create scripts for?"
+    echo "Select a folder:"
+    read choice
+    folder="${folders[$choice-1]}"
+    echo "You selected $folder"
+    echo "What do you want your alias to be?"
+    read alias
+    echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
+    write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
+
+}
 # Main menu loop
 while true; do
     PS3='Please enter your choice: '
@@ -168,127 +290,22 @@ while true; do
                 ;;
             "${options[2]}")
                 echo "Configuring Git and SSH Key"
-                while true; do
-                    read -p "Please Enter your name: " name
-                    if [[ -z "$name" ]]; then
-                        echo "Invalid input. Please enter a non-empty name."
-                    else
-                        echo "Your submitted name: $name"
-                        break
-                    fi
-                done
-                while true; do
-                    read -p "Please Enter your Email: " email
-                    if [[ $email =~ ^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$ ]]; then
-                        echo "Your submitted email: $email"
-                        break
-                    else
-                        echo "Invalid input. Please enter a valid email."
-                    fi
-                done
-                echo "-------------------------------------"
-                configure_git "$name" "$email"
-                generate_ssh_key "$email"
+                configure_git_and_ssh_keys
                 break
                 ;;
             "${options[3]}")
                 echo "Cloning Obsidian Git Repo"
-                while true; do
-                    echo "Please Enter your git url: "
-                    read git_url
-                    if [[ -z "$git_url" ]]; then
-                        echo "Invalid input. Please enter a non-empty git url."
-                    else
-                        echo "Your submitted git url: $git_url"
-                        break
-                    fi
-                done
-                base_name=$(basename $git_url)
-                folder_name=${base_name%.*}
-                clone_repo "$folder_name" "$git_url"
+                clone_obsidian_repo
                 break
                 ;;
             "${options[4]}")
                 echo "Optimize repository for obsidian mobile"
-                folders=()
-                i=1
-                for dir in $HOME_PATH/*; do
-                    if [ -d "$dir" ]; then
-                        if git -C "$dir" status &> /dev/null
-                        then
-                            folder_name=$(basename "$dir")
-                            folders+=("$folder_name")
-                            echo "$i) $folder_name"
-                            ((i++))
-                        fi
-                    fi
-                done
-                echo "Now which repository do you want to optimize?"
-                echo "Select a folder:"
-                read choice
-                folder="${folders[$choice-1]}"
-                echo "You selected $folder"
-                if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
-                    if git -C "$HOME_PATH/$folder" status &> /dev/null
-                    then
-                        add_gitignore_entries "$folder"
-                        add_gitattributes_entry "$folder"
-                        remove_files_from_git "$folder"
-                    else
-                        echo "The $folder folder is not a Git repository"
-                    fi
-                else
-                    echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
-                fi
+                optimize_repo_for_mobile
                 break
                 ;;
             "${options[5]}")
                 echo "Creating Alias and git commit scripts"
-                touch "$HOME_PATH/.bashrc"
-                touch "$HOME_PATH/.obsidian_script"
-                touch "$HOME_PATH/.profile"
-                echo '
-function sync_obsidian
-{
-cd "$1"
-git add .
-git commit -m "Android Commit"
-git fetch
-git merge --no-edit
-git add .
-git commit -m "automerge android"
-git push
-echo "Sync is finished"
-sleep 2
-                }' > "$HOME_PATH/.obsidian_script"
-                # append this to file only if it is not already there
-
-                write_to_file_if_not_exists "$HOME_PATH/.obsidian_script" "$HOME_PATH/.profile"
-                write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
-
-
-                folders=()
-                i=1
-                for dir in $HOME_PATH/*; do
-                    if [ -d "$dir" ]; then
-                        if git -C "$dir" status &> /dev/null
-                        then
-                            folder_name=$(basename "$dir")
-                            folders+=("$folder_name")
-                            echo "$i) $folder_name"
-                            ((i++))
-                        fi
-                    fi
-                done
-                echo "Now which repository do you want to create scripts for?"
-                echo "Select a folder:"
-                read choice
-                folder="${folders[$choice-1]}"
-                echo "You selected $folder"
-                echo "What do you want your alias to be?"
-                read alias
-                echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
-                write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
+                create_alias_and_git_scripts
                 break
                 ;;
             "${options[6]}")
