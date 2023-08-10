@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.3.9"
+echo "Script Version 0.4.0.0"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -239,7 +239,7 @@ chmod +x "$HOME_PATH/.obsidian"
 touch "$HOME_PATH/.profile"
 # append this to file only if it is not already there
 write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian"
-write_to_file_if_not_exists "$HOME_PATH/.obsidian" "$HOME_PATH/.profile"
+write_to_file_if_not_exists "source $HOME_PATH/.obsidian" "$HOME_PATH/.profile"
 write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
 
 
