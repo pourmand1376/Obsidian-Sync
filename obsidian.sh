@@ -39,8 +39,10 @@ generate_ssh_key() {
   else   
     echo "SSH key already exists"
   fi
-  echo "Here is your SSH public key. You can upload it."
+  echo "Here is your SSH public key. You can paste it inside Github"
+  echo "------------"
   cat ~/.ssh/id_ed25519.pub
+  echo "------------"
 }
 
 
