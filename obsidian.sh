@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.3"
+echo "Script Version 0.0.4"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -46,6 +46,7 @@ generate_ssh_key() {
   echo "------------"
   cat $HOME_PATH/.ssh/id_ed25519.pub
   echo "------------"
+  eval $(ssh-agent -s)
 }
 
 clone_repo() {
