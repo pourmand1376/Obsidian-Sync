@@ -202,7 +202,8 @@ while true; do
             "${options[4]}")
                 echo "Optimize repository for obsidian mobile"
                 while true; do
-                    read -p "Please Enter your folder name which you cloned into: " folder_name
+                    echo "Please Enter your folder name which you cloned into:"
+                    read folder_name
                     if [[ $folder_name =~ ^[a-zA-Z0-9_]+$ ]]; then
                         if [ -d "$folder_name" ]; then
                         echo "Folder name submitted: $folder_name"
