@@ -215,7 +215,7 @@ function optimize_repo_for_mobile()
 function create_alias_and_git_scripts()
 {
     touch "$HOME_PATH/.bashrc"
-    touch "$HOME_PATH/.obsidian_script"
+    touch "$HOME_PATH/.obsidian-script"
     touch "$HOME_PATH/.profile"
     echo '
 function sync_obsidian
