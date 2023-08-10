@@ -213,7 +213,7 @@ while true; do
                     echo "Invalid input. Please enter a valid folder name."
                     fi
                 done
-                
+                cd $folder_name
                  if [ -d .git ]; then
                     echo "This is a valid git repository"
                     
