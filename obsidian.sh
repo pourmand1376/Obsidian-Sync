@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.3"
+echo "Script Version 0.2.3.1"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -202,8 +202,8 @@ while true; do
                 echo "Optimize repository for obsidian mobile"
                 folders=()
                 i=1
-                for dir in "$HOME_PATH/*"; do
-                    if [ -d "$HOME_PATH/$dir" ]; then
+                for dir in $HOME_PATH/*; do
+                    if [ -d $HOME_PATH/$dir ]; then
                         #if git -C "$HOME_PATH/$dir" status &> /dev/null
                         #then
                             folders+=("$dir")
@@ -225,7 +225,7 @@ while true; do
                         add_gitattributes_entry "$folder"
                         remove_files_from_git "$folder"
                     else
-                        echo "The $$folder folder is not a Git repository"
+                        echo "The $folder folder is not a Git repository"
                     fi
                 else
                     echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
