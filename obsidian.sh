@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.1"
+echo "Script Version 0.2.2"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -202,8 +202,8 @@ while true; do
                 echo "Optimize repository for obsidian mobile"
                 folders=()
                 for dir in "$HOME_PATH/*"; do
-                    if [ -d "$dir" ]; then
-                        if git -C "$dir" status &> /dev/null
+                    if [ -d "$HOME_PATH/$dir" ]; then
+                        if git -C "$HOME_PATH/$dir" status &> /dev/null
                         then
                             echo "The $dir folder is a Git repository"
                             folders+=("$dir")
