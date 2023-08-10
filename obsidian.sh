@@ -248,6 +248,9 @@ git push
 echo "Sync is finished"
 sleep 2
 }' > "$HOME_PATH/.obsidian_script"
+echo "source $HOME_PATH/.obsidian_script" >> "$HOME_PATH/.profile"
+echo "source $HOME_PATH/.profile" >> "HOME_PATH/.bashrc"
+
 
                 folders=()
                 i=1
@@ -267,7 +270,10 @@ sleep 2
                 read choice
                 folder="${folders[$choice-1]}"
                 echo "You selected $folder"
-                
+                echo "What do you want your alias to be?"
+                read alias
+                echo "alias $alias=sync_obsidian $HOME_PATH/$folder" > "$HOME_PATH/.$folder"
+                echo "source $HOME_PATH/.$folder" >> "$HOME_PATH/.profile"
                 break
                 ;;
             "${options[6]}")
