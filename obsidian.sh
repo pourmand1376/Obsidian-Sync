@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.7"
+echo "Script Version 0.2.8"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -239,7 +239,9 @@ while true; do
                 ;;
             "${options[5]}")
                 echo "Creating Alias and git commit scripts"
-                touch .bashrc .obsidian_script .profile
+                touch "$HOME_PATH/.bashrc"
+                touch "$HOME_PATH/.obsidian_script"
+                touch "$HOME_PATH/.profile"
                 echo '
 function sync_obsidian
 {
