@@ -4,6 +4,23 @@ echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
 DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
+
+OBSIDIAN_SCRIPT="
+function sync_obsidian
+{
+cd \"$1\"
+git add .
+git commit -m \"Android Commit\"
+git fetch
+git merge --no-edit
+git add .
+git commit -m \"automerge android\"
+git push
+echo \"Sync is finished\"
+sleep 2
+    }
+"
+
 # Define functions for each menu option
 function install_required_deps()
 {
@@ -219,22 +236,8 @@ function create_alias_and_git_scripts()
     touch "$HOME_PATH/.bashrc"
     touch "$HOME_PATH/.obsidian-script"
     touch "$HOME_PATH/.profile"
-    echo '
-function sync_obsidian
-{
-cd "$1"
-git add .
-git commit -m "Android Commit"
-git fetch
-git merge --no-edit
-git add .
-git commit -m "automerge android"
-git push
-echo "Sync is finished"
-sleep 2
-    }' > "$HOME_PATH/.obsidian-script"
     # append this to file only if it is not already there
-
+    write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian-script"
     write_to_file_if_not_exists "$HOME_PATH/.obsidian-script" "$HOME_PATH/.profile"
     write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
 
@@ -262,6 +265,7 @@ sleep 2
     echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
     write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
     echo "alias $alias created in .$folder"
+    echo "You should exit the program to see the changes"
 }
 # Main menu loop
 while true; do
