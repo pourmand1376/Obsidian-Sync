@@ -15,8 +15,18 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/pourmand1376/obsidian-sy
 
 Then follow the steps in the script to sync the Obsidian git repo you have created.
 
-Use the following Procedure:
+You can just follow the numbers from 1 to 7 and you are done. Don't worry it would take only 5 minutes or less!
 
-1. Install git and necessary packages
-2. Create an SSH-Key and upload it in github
-3. Clone your repository and create an alias for syncing
+1. First, you choose 1. At this step all required dependencies like git would be installed.
+
+2. Then you would grant Termux the access your files. This is needed since obsidian can not see Termux files. We should save obsidian files inside a shared directory. We will save them inside your downloads folder.
+
+3. You enter your name and your email address. Then an SSH-Key is generated for you. You should upload the content of this ssh-key to your github acccount (or any git server you are using).
+
+4. You enter the url of your obsidian git repository and we will fork it.
+
+5. Then you choose your obsidian folder and we will add some files to make git commits automatic.
+
+6. You choose your obsidian folder and suggest an alias to be used for ease of use.
+
+After that you only need to open obsidian and type the alias you created to sync the repository.
