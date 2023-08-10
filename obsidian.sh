@@ -86,7 +86,6 @@ while true; do
                         break
                     fi
                 done
-                echo "$name"
                 #configure_git
                 #generate_ssh_key
                 break
