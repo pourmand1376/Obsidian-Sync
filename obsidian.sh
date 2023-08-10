@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.3"
+echo "Script Version 0.2.2"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -201,36 +201,35 @@ while true; do
             "${options[4]}")
                 echo "Optimize repository for obsidian mobile"
                 folders=()
+                i=1
                 for dir in "$HOME_PATH/*"; do
                     if [ -d "$HOME_PATH/$dir" ]; then
-                        if git -C "$HOME_PATH/$dir" status &> /dev/null
-                        then
-                            echo "The $dir folder is a Git repository"
+                        #if git -C "$HOME_PATH/$dir" status &> /dev/null
+                        #then
                             folders+=("$dir")
-                        else
-                            echo "The $dir folder is not a Git repository"
-                        fi
+                            folders+=("$dir")
+                            echo "$i) $dir"
+                            ((i++))
+                        #fi
                     fi
                 done
                 echo "Now which repository do you want to optimize?"
                 echo "Select a folder:"
-                select folder in "${folders[@]}"; do
-                    echo "You selected $folder"
-                    if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
-                        if git -C "$HOME_PATH/$folder" status &> /dev/null
-                        then
-                            add_gitignore_entries "$folder"
-                            add_gitattributes_entry "$folder"
-                            remove_files_from_git "$folder"
-                        else
-                            echo "The $$folder folder is not a Git repository"
-                        fi
+                read choice
+                folder="${folders[$choice-1]}"
+                echo "You selected $folder"
+                if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
+                    if git -C "$HOME_PATH/$folder" status &> /dev/null
+                    then
+                        add_gitignore_entries "$folder"
+                        add_gitattributes_entry "$folder"
+                        remove_files_from_git "$folder"
                     else
-                        echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
+                        echo "The $$folder folder is not a Git repository"
                     fi
-                    break;
-                done
-
+                else
+                    echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
+                fi
                 break
                 ;;
             "${options[5]}")
