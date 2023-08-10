@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.8"
+echo "Script Version 0.2.9"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -131,6 +131,7 @@ function write_to_file_if_not_exists()
 {
     content="$1"
     file="$2"
+    touch "$file"
     grep -qxF "$content" "$file" || "$content" echo  >> "$file"
 }
 
