@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.8"
+echo "Script Version 0.0.9"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
