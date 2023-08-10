@@ -62,6 +62,7 @@ clone_repo() {
   mkdir -p "$HOME_PATH/$folder"
 
   git --git-dir "$HOME_PATH/$folder" --work-tree "$DOWNLOAD_FOLDER/$folder" clone "$git_url"
+  cd "HOME_PATH/$folder"
   git worktree add --checkout "$DOWNLOAD_FOLDER/$folder" --force 
 }
 
