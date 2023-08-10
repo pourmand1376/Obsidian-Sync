@@ -181,7 +181,8 @@ while true; do
             "${options[3]}")
                 echo "Cloning Obsidian Git Repo"
                 while true; do
-                    read -p "Please Enter your git url: " git_url
+                echo "Please Enter your git url: "
+                    read git_url
                     if [[ -z "$git_url" ]]; then
                         echo "Invalid input. Please enter a non-empty git url."
                     else
