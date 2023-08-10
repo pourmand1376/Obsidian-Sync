@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.9.7"
+echo "Script Version 0.0.9.8"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -215,7 +215,6 @@ while true; do
                 select folder in "${folders[@]}"; do
                     echo "You selected $folder"
                     break;
-                done
                 done
                 if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
                     add_gitignore_entries "$folder"
