@@ -63,6 +63,63 @@ clone_repo() {
 
 }
 
+# add gitignore file
+add_gitignore_entries() {
+
+  GITIGNORE=".gitignore"
+
+  ENTRIES=".trash/ 
+.obsidian/workspace
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/app.json"
+
+  if [ ! -f "$GITIGNORE" ]; then
+    touch "$GITIGNORE"
+  fi
+
+  for entry in $ENTRIES; do
+    if ! grep -q -Fx "$entry" "$GITIGNORE"; then
+      echo "$entry" >> "$GITIGNORE"
+    fi
+  done
+
+}
+
+add_gitattributes_entry() {
+
+  GITATTRIBUTES=".gitattributes"
+  ENTRY="*.md merge=union"
+
+  if [ ! -f "$GITATTRIBUTES" ]; then
+    touch "$GITATTRIBUTES"
+  fi
+
+  if ! grep -q -F "$ENTRY" "$GITATTRIBUTES"; then
+    echo "$ENTRY" >> "$GITATTRIBUTES"
+  fi
+
+}
+
+remove_files_from_git()
+{
+FILES=".obsidian/workspace 
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/app.json"
+
+for file in $FILES; do
+  if [ -f "$file" ]; then
+    git rm --cached "$file"
+  fi 
+done
+
+if git status | grep "new file" ; then
+  git commit -am "Remove ignored files"
+fi
+
+}
+
 
 # Main menu loop
 while true; do
@@ -142,6 +199,30 @@ while true; do
                 break
                 ;;
             "${options[4]}")
+                echo "Optimize repository for obsidian mobile"
+                while true; do
+                    read -p "Please Enter your folder name which you cloned into: " folder_name
+                    if [[ $folder_name =~ ^[a-zA-Z0-9_]+$ ]]; then
+                        if [ -d "$folder_name" ]; then
+                        echo "Folder name submitted: $folder_name"
+                        break
+                        else  
+                        echo "This folder doesn't exist. You haven't cloned the git repo. To use this option, first clone the git repository into a folder"
+                        fi
+                    else
+                    echo "Invalid input. Please enter a valid folder name."
+                    fi
+                done
+                
+                 if [ -d .git ]; then
+                    echo "This is a valid git repository"
+                    
+                else
+                    echo "This is not a git repository" 
+                fi
+                break
+                ;;
+            "${options[5]}")
                 exit 0
                 ;;
             *) echo "Invalid option";;
