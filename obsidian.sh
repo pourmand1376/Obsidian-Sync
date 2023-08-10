@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.3.6"
+echo "Script Version 0.3.7"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -17,7 +17,7 @@ function sync_obsidian
     git commit -m "automerge android"
     git push
     echo "Sync is finished"
-    sleep 1
+    sleep 2
 }
 "
 
