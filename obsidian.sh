@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.7"
+echo "Script Version 0.0.8"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -190,7 +190,7 @@ while true; do
                         break
                     fi
                 done
-                basename=$(basename $url)
+                basename=$(basename $git_url)
                 folder_name=${basename%.*}
                 clone_repo "$folder_name" "$git_url"
                 break
