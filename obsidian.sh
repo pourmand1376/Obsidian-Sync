@@ -51,7 +51,6 @@ generate_ssh_key() {
 }
 
 clone_repo() {
-  # Default folder name
   folder="$1"
   git_url="$2"
   echo "Git Folder: $folder"
@@ -116,11 +115,11 @@ FILES=".obsidian/workspace
 
 for file in $FILES; do
   if [ -f "$file" ]; then
-    cd ~/$folder_name
+    cd "$HOME_PATH/$folder_name"
     git rm --cached "$file"
   fi 
 done
-cd ~/$folder_name
+cd "$HOME_PATH/$folder_name"
 if git status | grep "new file" ; then
   git commit -am "Remove ignored files"
 fi
