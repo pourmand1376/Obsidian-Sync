@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.2"
+echo "Script Version 0.2.3"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -216,15 +216,21 @@ while true; do
                 echo "Select a folder:"
                 select folder in "${folders[@]}"; do
                     echo "You selected $folder"
+                    if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
+                        if git -C "$HOME_PATH/$folder" status &> /dev/null
+                        then
+                            add_gitignore_entries "$folder"
+                            add_gitattributes_entry "$folder"
+                            remove_files_from_git "$folder"
+                        else
+                            echo "The $$folder folder is not a Git repository"
+                        fi
+                    else
+                        echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
+                    fi
                     break;
                 done
-                if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
-                    add_gitignore_entries "$folder"
-                    add_gitattributes_entry "$folder"
-                    remove_files_from_git "$folder"
-                else
-                    echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
-                fi
+
                 break
                 ;;
             "${options[5]}")
