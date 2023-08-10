@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.9.6"
+echo "Script Version 0.0.9.7"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -54,7 +54,7 @@ generate_ssh_key() {
 clone_repo() {
   folder="$1"
   git_url="$2"
-  echo "Git Folder: $folder"
+  echo "Git Folder: $HOME_PATH/$folder"
   echo "Obsidian Folder: $DOWNLOAD_FOLDER/$folder"
   echo "Git Url: $git_url"
 
