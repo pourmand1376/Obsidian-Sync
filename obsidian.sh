@@ -46,7 +46,7 @@ generate_ssh_key() {
 }
 
 clone_repo() {
-
+cd "~/"
   # Default folder name
   folder="$1"
   git_url="$2"
@@ -66,7 +66,7 @@ clone_repo() {
 # add gitignore file
 add_gitignore_entries() {
 folder_name="$1"
-cd ~/storage/downloads/"$folder_name"
+cd "~/storage/downloads/$folder_name"
   GITIGNORE=".gitignore"
 
   ENTRIES=".trash/ 
@@ -89,7 +89,7 @@ cd ~/storage/downloads/"$folder_name"
 
 add_gitattributes_entry() {
 folder_name="$1"
-cd ~/storage/downloads/"$folder_name"
+cd "~/storage/downloads/$folder_name"
   GITATTRIBUTES=".gitattributes"
   ENTRY="*.md merge=union"
 
