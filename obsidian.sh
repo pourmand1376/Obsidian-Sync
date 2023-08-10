@@ -8,7 +8,7 @@ DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
 OBSIDIAN_SCRIPT="
 function sync_obsidian
 {
-    cd "$1"
+    cd "\$1"
     git add .
     git commit -m "Android Commit"
     git fetch
