@@ -198,33 +198,31 @@ while true; do
                 ;;
             "${options[4]}")
                 echo "Optimize repository for obsidian mobile"
-                while true; do
-                    echo "Please Enter your folder name which you cloned into:"
-                    read folder_name
-                    if [[ $folder_name =~ ^[a-zA-Z0-9_\-]+$ ]]; then
-                        if [ -d "$folder_name" ]; then
-                        echo "Folder name submitted: $folder_name"
-                        # Try git status on the folder
-                        if git -C "$folder_name" status &> /dev/null
+                folders=()
+                for dir in "$HOME_PATH/*"; do
+                    if [ -d "$dir" ]; then
+                        if git -C "$dir" status &> /dev/null
                         then
-                            echo "The $folder_name folder is a Git repository"
-                            break 
+                            echo "The $dir folder is a Git repository"
+                            folders+=("$dir")
                         else
-                            echo "The $folder_name folder is not a Git repository"
+                            echo "The $dir folder is not a Git repository"
                         fi
-                        else  
-                        echo "This folder doesn't exist. You haven't cloned the git repo. To use this option, first clone the git repository into a folder"
-                        fi
-                    else
-                    echo "Invalid input. Please enter a valid folder name."
                     fi
                 done
-                if [ -d "$DOWNLOAD_FOLDER/$folder_name" ]; then
-                    add_gitignore_entries "$folder_name"
-                    add_gitattributes_entry "$folder_name"
-                    remove_files_from_git "$folder_name"
+                echo "Now which repository do you want to optimize?"
+                echo "Select a folder:"
+                select folder in "${folders[@]}"; do
+                    echo "You selected $folder"
+                    break;
+                done
+                done
+                if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
+                    add_gitignore_entries "$folder"
+                    add_gitattributes_entry "$folder"
+                    remove_files_from_git "$folder"
                 else
-                    echo "Folder $DOWNLOAD_FOLDER/$folder_name doesn't exist. You should clone the repo again."
+                    echo "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
                 fi
                 break
                 ;;
