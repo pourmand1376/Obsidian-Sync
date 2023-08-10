@@ -131,8 +131,12 @@ function write_to_file_if_not_exists()
 {
     content="$1"
     file="$2"
-    touch $file
-    grep -qxF "$content" "$file" || "$content" echo  >> "$file"
+    if [ ! -f "$file" ]; then
+        touch "$file"
+    fi
+    if ! grep -qxF "$content" "$file"; then
+        echo "$content" >> "$file"
+    fi
 }
 
 # Main menu loop
