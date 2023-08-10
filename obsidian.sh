@@ -1,5 +1,7 @@
 #!/bin/bash
 echo "Script Version 0.1"
+echo "This script is used to facilitate configuration of git for obsidian. "
+
 # Define functions for each menu option
 function install_required_deps()
 {
