@@ -256,7 +256,7 @@ sleep 2
                 }' > "$HOME_PATH/.obsidian_script"
                 # append this to file only if it is not already there
 
-                write_to_file_if_not_exists $HOME_PATH/.obsidian_script" "$HOME_PATH/.profile" 
+                write_to_file_if_not_exists "$HOME_PATH/.obsidian_script" "$HOME_PATH/.profile"
                 write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
 
 
