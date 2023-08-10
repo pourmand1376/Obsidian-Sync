@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.4"
+echo "Script Version 0.2.5"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -127,7 +127,12 @@ remove_files_from_git()
 
 }
 
-
+function write_to_file_if_not_exists()
+{
+    content="$1"
+    file="$2"
+    grep -qxF "$content" "$file" || "$content" echo  >> "$file"
+}
 
 # Main menu loop
 while true; do
@@ -234,6 +239,7 @@ while true; do
                 ;;
             "${options[5]}")
                 echo "Creating Alias and git commit scripts"
+                touch .bashrc .obsidian_script .profile
                 echo '
 function sync_obsidian
 {
@@ -247,9 +253,11 @@ git commit -m "automerge android"
 git push
 echo "Sync is finished"
 sleep 2
-}' > "$HOME_PATH/.obsidian_script"
-echo "source $HOME_PATH/.obsidian_script" >> "$HOME_PATH/.profile"
-echo "source $HOME_PATH/.profile" >> "HOME_PATH/.bashrc"
+                }' > "$HOME_PATH/.obsidian_script"
+                # append this to file only if it is not already there
+
+                write_to_file_if_not_exists $HOME_PATH/.obsidian_script" "$HOME_PATH/.profile" 
+                write_to_file_if_not_exists "source $HOME_PATH/.profile" "HOME_PATH/.bashrc"
 
 
                 folders=()
@@ -272,8 +280,8 @@ echo "source $HOME_PATH/.profile" >> "HOME_PATH/.bashrc"
                 echo "You selected $folder"
                 echo "What do you want your alias to be?"
                 read alias
-                echo "alias $alias=sync_obsidian $HOME_PATH/$folder" > "$HOME_PATH/.$folder"
-                echo "source $HOME_PATH/.$folder" >> "$HOME_PATH/.profile"
+                echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
+                write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
                 break
                 ;;
             "${options[6]}")
