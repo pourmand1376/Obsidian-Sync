@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.5"
+echo "Script Version 0.0.6"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -62,6 +62,8 @@ clone_repo() {
   mkdir -p "$HOME_PATH/$folder"
   git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url" 
 
+# remove folder if it is empty
+  rm -d "$HOME_PATH/$folder" 
 }
 
 # add gitignore file
