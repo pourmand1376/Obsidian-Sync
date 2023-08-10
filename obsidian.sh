@@ -205,7 +205,14 @@ while true; do
                     if [[ $folder_name =~ ^[a-zA-Z0-9_]+$ ]]; then
                         if [ -d "$folder_name" ]; then
                         echo "Folder name submitted: $folder_name"
-                        break
+                        # Try git status on the folder
+                        if git -C "$folder_name" status &> /dev/null
+                        then
+                            echo "The $folder_name folder is a Git repository"
+                            break 
+                        else
+                            echo "The $folder_name folder is not a Git repository"
+                        fi
                         else  
                         echo "This folder doesn't exist. You haven't cloned the git repo. To use this option, first clone the git repository into a folder"
                         fi
@@ -213,13 +220,7 @@ while true; do
                     echo "Invalid input. Please enter a valid folder name."
                     fi
                 done
-                cd $folder_name
-                 if [ -d .git ]; then
-                    echo "This is a valid git repository"
-                    
-                else
-                    echo "This is not a git repository" 
-                fi
+                
                 break
                 ;;
             "${options[5]}")
