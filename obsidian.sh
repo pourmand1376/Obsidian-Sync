@@ -1,8 +1,9 @@
 #!/bin/bash
-echo "Script Version 0.0.9.2"
+echo "Script Version 0.0.9.3"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
+DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
 # Define functions for each menu option
 function install_required_deps()
 {
@@ -54,19 +55,19 @@ clone_repo() {
   folder="$1"
   git_url="$2"
   echo "Git Folder: $folder"
-  echo "Obsidian Folder: $HOME_PATH/storage/downloads/$folder"
+  echo "Obsidian Folder: $DOWNLOAD_FOLDER/$folder"
   echo "Git Url: $git_url"
 
   cd "$HOME_PATH/"
   mkdir -p "$HOME_PATH/$folder"
-  echo 'git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url"'
+  git --git-dir "$HOME_PATH/$folder" --work-tree "$DOWNLOAD_FOLDER/$folder" clone "$git_url"
 
 }
 
 # add gitignore file
 add_gitignore_entries() {
 folder_name="$1"
-cd "$HOME_PATH/storage/downloads/$folder_name"
+cd "$DOWNLOAD_FOLDER/$folder_name"
   GITIGNORE=".gitignore"
 
   ENTRIES=".trash/ 
@@ -89,7 +90,7 @@ cd "$HOME_PATH/storage/downloads/$folder_name"
 
 add_gitattributes_entry() {
 folder_name="$1"
-cd "$HOME_PATH/storage/downloads/$folder_name"
+cd "$DOWNLOAD_FOLDER/$folder_name"
   GITATTRIBUTES=".gitattributes"
   ENTRY="*.md merge=union"
 
@@ -106,7 +107,7 @@ cd "$HOME_PATH/storage/downloads/$folder_name"
 remove_files_from_git()
 {
 folder_name="$1"
-cd "$HOME_PATH/storage/downloads/$folder_name"
+cd "$DOWNLOAD_FOLDER/$folder_name"
 
 FILES=".obsidian/workspace 
 .obsidian/workspace.json
@@ -218,12 +219,12 @@ while true; do
                     echo "Invalid input. Please enter a valid folder name."
                     fi
                 done
-                if [ -d "~/storage/downloads/$folder_name" ]; then
+                if [ -d "$DOWNLOAD_FOLDER/$folder_name" ]; then
                     add_gitignore_entries "$folder_name"
                     add_gitattributes_entry "$folder_name"
                     remove_files_from_git "$folder_name"
                 else
-                    echo "Folder ~/storage/downloads/$folder_name doesn't exist. You should clone the repo again."
+                    echo "Folder $DOWNLOAD_FOLDER/$folder_name doesn't exist. You should clone the repo again."
                 fi
                 break
                 ;;
