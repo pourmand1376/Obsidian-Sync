@@ -234,11 +234,11 @@ function optimize_repo_for_mobile()
 function create_alias_and_git_scripts()
 {
     touch "$HOME_PATH/.bashrc"
-    touch "$HOME_PATH/.obsidian-script"
+    touch "$HOME_PATH/.obsidian"
     touch "$HOME_PATH/.profile"
     # append this to file only if it is not already there
-    write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian-script"
-    write_to_file_if_not_exists "$HOME_PATH/.obsidian-script" "$HOME_PATH/.profile"
+    write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian"
+    write_to_file_if_not_exists "$HOME_PATH/.obsidian" "$HOME_PATH/.profile"
     write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
 
 
