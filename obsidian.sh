@@ -75,8 +75,7 @@ add_gitignore_entries() {
     ENTRIES=".trash/
     .obsidian/workspace
     .obsidian/workspace.json
-    .obsidian/workspace-mobile.json
-    .obsidian/app.json"
+    .obsidian/workspace-mobile.json"
 
     if [ ! -f "$GITIGNORE" ]; then
         touch "$GITIGNORE"
