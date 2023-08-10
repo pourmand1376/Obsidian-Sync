@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.6"
+echo "Script Version 0.0.7"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -62,8 +62,6 @@ clone_repo() {
   mkdir -p "$HOME_PATH/$folder"
   git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url" 
 
-# remove folder if it is empty
-  rm -d "$HOME_PATH/$folder" 
 }
 
 # add gitignore file
@@ -184,19 +182,6 @@ while true; do
             "${options[3]}")
                 echo "Cloning Obsidian Git Repo"
                 while true; do
-                    read -p "Please Enter your folder: " folder_name
-                    if [[ $folder_name =~ ^[a-zA-Z0-9_\-]+$ ]]; then
-                        if [ -d "$folder_name" ]; then
-                        echo "Folder already exists"
-                        else  
-                        echo "Your submitted folder name: $folder_name"
-                        break
-                        fi
-                    else
-                    echo "Invalid input. Please enter a valid folder name."
-                    fi
-                done
-                while true; do
                     read -p "Please Enter your git url: " git_url
                     if [[ -z "$git_url" ]]; then
                         echo "Invalid input. Please enter a non-empty git url."
@@ -205,6 +190,8 @@ while true; do
                         break
                     fi
                 done
+                basename=$(basename $url)
+                folder_name=${basename%.*}
                 clone_repo "$folder_name" "$git_url"
                 break
                 ;;
