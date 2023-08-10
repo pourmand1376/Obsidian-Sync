@@ -39,6 +39,8 @@ generate_ssh_key() {
   else   
     echo "SSH key already exists"
   fi
+  echo "Here is your SSH public key. You can upload it."
+  cat ~/.ssh/id_ed25519.pub
 }
 
 
@@ -86,7 +88,7 @@ while true; do
                          echo "Invalid input. Please enter a valid email."
                     fi
                 done
-                
+                echo "-------------------------------------"
                 configure_git "$name" "$email"
                 generate_ssh_key "$email"
                 break
