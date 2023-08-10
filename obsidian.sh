@@ -3,7 +3,6 @@ echo "Script Version 0.0.9.1"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
-cd $HOME_PATH
 # Define functions for each menu option
 function install_required_deps()
 {
