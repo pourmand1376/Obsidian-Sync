@@ -130,6 +130,7 @@ while true; do
         "Give Access to Storage" 
         "Configure Git and Create SSH Key"
         "Clone Obsidian Git Repo in Termux"
+        "Optimize repository for multi-device use"
         "Quit"
     )
 
