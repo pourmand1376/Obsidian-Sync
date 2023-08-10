@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.0.2"
+echo "Script Version 0.0.3"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -56,7 +56,7 @@ clone_repo() {
   echo "Obsidian Folder: $HOME_PATH/storage/downloads/$folder"
   echo "Git Url: $git_url"
 
-  cd "~/"
+  cd "$HOME_PATH/"
   mkdir -p "$HOME_PATH/$folder"
   git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url" 
 
