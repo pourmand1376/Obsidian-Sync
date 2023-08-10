@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.3.6"
+echo "Script Version 0.2.3.7"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -234,6 +234,21 @@ while true; do
                 ;;
             "${options[5]}")
                 echo "Creating Alias and git commit scripts"
+                echo '
+function sync_obsidian
+{
+cd "$1"
+git add .
+git commit -m "Android Commit"
+git fetch
+git merge --no-edit
+git add .
+git commit -m "automerge android"
+git push
+echo "Sync is finished"
+sleep 2
+}' > "$HOME_PATH/.obsidian_script"
+
                 folders=()
                 i=1
                 for dir in $HOME_PATH/*; do
@@ -252,6 +267,7 @@ while true; do
                 read choice
                 folder="${folders[$choice-1]}"
                 echo "You selected $folder"
+                
                 break
                 ;;
             "${options[6]}")
