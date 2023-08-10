@@ -46,19 +46,20 @@ generate_ssh_key() {
 }
 
 clone_repo() {
-  cd "~"
   # Default folder name
   folder="$1"
   git_url="$2"
+  echo "Git Folder: $folder"
+  echo "Obsidian Folder: ~/storage/downloads/$folder"
+  echo "Git Url: $git_url"
 
   # Check if folder name provided
   if [ -n "$2" ]; then
     folder="$2"
   fi
 
-  cd ~/
-  mkdir -p "$folder"
-
+  cd "~/"
+  mkdir -p "~/$folder"
   git --git-dir "~/$folder" --work-tree "~/storage/downloads/$folder" clone "$git_url" 
 
 }
