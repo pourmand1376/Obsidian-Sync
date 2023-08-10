@@ -46,7 +46,7 @@ generate_ssh_key() {
 }
 
 clone_repo() {
-cd "~/"
+  cd "~"
   # Default folder name
   folder="$1"
   git_url="$2"
@@ -202,7 +202,7 @@ while true; do
                         break
                     fi
                 done
-                clone_repo "$name" "$git_url"
+                clone_repo "$folder_name" "$git_url"
                 break
                 ;;
             "${options[4]}")
