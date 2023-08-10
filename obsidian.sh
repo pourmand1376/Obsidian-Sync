@@ -1,8 +1,9 @@
 #!/bin/bash
-echo "Script Version 0.0.9"
+echo "Script Version 0.0.9.1"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
+cd $HOME_PATH
 # Define functions for each menu option
 function install_required_deps()
 {
@@ -29,7 +30,7 @@ configure_git() {
   git config --global pull.rebase false
   git config --global --add safe.directory '*'
   git config --global core.protectNTFS false
-
+  git config --global core.longpaths true
 }
 
 generate_ssh_key() {
