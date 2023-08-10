@@ -78,16 +78,16 @@ while true; do
                     fi
                 done
                 while true; do
-                    read -p "Please Enter your Email: " mail
-                    if [[ $mail =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$ ]]; then
-                        echo "Invalid input. Please enter a valid email."
-                    else
-                        echo "Your submitted email: $mail"
+                    read -p "Please Enter your Email: " email
+                    if [[ $email =~ ^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$ ]]; then
+                        echo "Your submitted email: $email"
                         break
+                    else
+                         echo "Invalid input. Please enter a valid email."
                     fi
                 done
-                #configure_git
-                #generate_ssh_key
+                configure_git $name $email
+                generate_ssh_key $email
                 break
                 ;;
             "${options[3]}")
