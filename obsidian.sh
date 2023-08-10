@@ -204,13 +204,13 @@ while true; do
                 i=1
                 for dir in $HOME_PATH/*; do
                     if [ -d "$dir" ]; then
-                        #if git -C "$HOME_PATH/$dir" status &> /dev/null
-                        #then
-                            folders+=("$dir")
-                            folders+=("$dir")
-                            echo "$i) $dir"
+                        if git -C "$dir" status &> /dev/null
+                        then
+                            folder_name=$(basename "$dir")
+                            folders+=("$folder_name")
+                            echo "$i) $folder_name"
                             ((i++))
-                        #fi
+                        fi
                     fi
                 done
                 echo "Now which repository do you want to optimize?"
