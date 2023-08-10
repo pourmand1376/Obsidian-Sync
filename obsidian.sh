@@ -86,8 +86,8 @@ while true; do
                          echo "Invalid input. Please enter a valid email."
                     fi
                 done
-                configure_git $name $email
-                generate_ssh_key $email
+                configure_git "$name" "$email"
+                generate_ssh_key "$email"
                 break
                 ;;
             "${options[3]}")
