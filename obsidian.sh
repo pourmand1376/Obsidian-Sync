@@ -1,8 +1,8 @@
 #!/bin/bash
-echo "Script Version 0.0.9.4"
+echo "Script Version 0.0.9.5"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
-HOME_PATH="/data/data/com.termux/files/home"
+HOME_PATH="~"
 DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
 # Define functions for each menu option
 function install_required_deps()
