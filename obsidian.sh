@@ -65,7 +65,8 @@ clone_repo() {
 
 # add gitignore file
 add_gitignore_entries() {
-
+folder_name="$1"
+cd ~/storage/downloads/"$folder_name"
   GITIGNORE=".gitignore"
 
   ENTRIES=".trash/ 
@@ -87,7 +88,8 @@ add_gitignore_entries() {
 }
 
 add_gitattributes_entry() {
-
+folder_name="$1"
+cd ~/storage/downloads/"$folder_name"
   GITATTRIBUTES=".gitattributes"
   ENTRY="*.md merge=union"
 
@@ -103,6 +105,9 @@ add_gitattributes_entry() {
 
 remove_files_from_git()
 {
+folder_name="$1"
+cd ~/storage/downloads/$folder_name
+
 FILES=".obsidian/workspace 
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
@@ -110,10 +115,11 @@ FILES=".obsidian/workspace
 
 for file in $FILES; do
   if [ -f "$file" ]; then
+    cd ~/$folder_name
     git rm --cached "$file"
   fi 
 done
-
+cd ~/$folder_name
 if git status | grep "new file" ; then
   git commit -am "Remove ignored files"
 fi
@@ -176,7 +182,7 @@ while true; do
                 echo "Cloning Obsidian Git Repo"
                 while true; do
                     read -p "Please Enter your folder: " folder_name
-                    if [[ $folder_name =~ ^[a-zA-Z0-9_]+$ ]]; then
+                    if [[ $folder_name =~ ^[a-zA-Z0-9_\-]+$ ]]; then
                         if [ -d "$folder_name" ]; then
                         echo "Folder already exists"
                         else  
@@ -222,7 +228,11 @@ while true; do
                     echo "Invalid input. Please enter a valid folder name."
                     fi
                 done
-                
+                if [ -d "~/storage/downloads/$folder_name" ]; then
+                    
+                else
+                    echo "Folder ~/storage/downloads/$folder_name doesn't exist. You should clone the repo again."
+                fi
                 break
                 ;;
             "${options[5]}")
