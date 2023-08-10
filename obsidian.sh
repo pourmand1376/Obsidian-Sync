@@ -204,7 +204,7 @@ while true; do
                 while true; do
                     echo "Please Enter your folder name which you cloned into:"
                     read folder_name
-                    if [[ $folder_name =~ ^[a-zA-Z0-9_]+$ ]]; then
+                    if [[ $folder_name =~ ^[a-zA-Z0-9_\-]+$ ]]; then
                         if [ -d "$folder_name" ]; then
                         echo "Folder name submitted: $folder_name"
                         # Try git status on the folder
