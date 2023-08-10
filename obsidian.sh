@@ -2,6 +2,7 @@
 echo "Script Version 0.1"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
+HOME_PATH="/data/data/com.termux/files/home"
 # Define functions for each menu option
 function install_required_deps()
 {
@@ -34,16 +35,16 @@ configure_git() {
 generate_ssh_key() {
   email="$1"
   # Check if key already exists
-  if [ ! -f ~/.ssh/id_ed25519 ]; then
+  if [ ! -f $HOME_PATH/.ssh/id_ed25519 ]; then
     # Generate key non-interactively
-    ssh-keygen -q -t ed25519 -N "" -f ~/.ssh/id_ed25519 -C "$email" 
+    ssh-keygen -q -t ed25519 -N "" -f $HOME_PATH/.ssh/id_ed25519 -C "$email" 
     echo "Generated new SSH key with email $email"
   else   
     echo "SSH key already exists"
   fi
   echo "Here is your SSH public key. You can paste it inside Github"
   echo "------------"
-  cat ~/.ssh/id_ed25519.pub
+  cat $HOME_PATH/.ssh/id_ed25519.pub
   echo "------------"
 }
 
@@ -52,19 +53,19 @@ clone_repo() {
   folder="$1"
   git_url="$2"
   echo "Git Folder: $folder"
-  echo "Obsidian Folder: ~/storage/downloads/$folder"
+  echo "Obsidian Folder: $HOME_PATH/storage/downloads/$folder"
   echo "Git Url: $git_url"
 
   cd "~/"
-  mkdir -p "~/$folder"
-  git --git-dir "~/$folder" --work-tree "~/storage/downloads/$folder" clone "$git_url" 
+  mkdir -p "$HOME_PATH/$folder"
+  git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url" 
 
 }
 
 # add gitignore file
 add_gitignore_entries() {
 folder_name="$1"
-cd "~/storage/downloads/$folder_name"
+cd "$HOME_PATH/storage/downloads/$folder_name"
   GITIGNORE=".gitignore"
 
   ENTRIES=".trash/ 
@@ -87,7 +88,7 @@ cd "~/storage/downloads/$folder_name"
 
 add_gitattributes_entry() {
 folder_name="$1"
-cd "~/storage/downloads/$folder_name"
+cd "$HOME_PATH/storage/downloads/$folder_name"
   GITATTRIBUTES=".gitattributes"
   ENTRY="*.md merge=union"
 
@@ -104,7 +105,7 @@ cd "~/storage/downloads/$folder_name"
 remove_files_from_git()
 {
 folder_name="$1"
-cd ~/storage/downloads/$folder_name
+cd "$HOME_PATH/storage/downloads/$folder_name"
 
 FILES=".obsidian/workspace 
 .obsidian/workspace.json
