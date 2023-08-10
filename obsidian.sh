@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "Script Version 0.1"
 # Define functions for each menu option
 function install_required_deps()
 {
