@@ -45,6 +45,24 @@ generate_ssh_key() {
   echo "------------"
 }
 
+clone_repo() {
+
+  # Default folder name
+  folder="$1"
+  git_url="$2"
+
+  # Check if folder name provided
+  if [ -n "$2" ]; then
+    folder="$2"
+  fi
+
+  cd ~/
+  mkdir -p "$folder"
+
+  git --git-dir ~/"$folder" --work-dir ~/storage/downloads/"$folder" clone "$git_url" 
+
+}
+
 
 # Main menu loop
 while true; do
@@ -54,6 +72,7 @@ while true; do
         "Install Required Dependencies"
         "Give Access to Storage" 
         "Configure Git and Create SSH Key"
+        "Clone Obsidian Git Repo in Termux"
         "Quit"
     )
 
@@ -96,6 +115,33 @@ while true; do
                 break
                 ;;
             "${options[3]}")
+                echo "Cloning Obsidian Git Repo"
+                while true; do
+                    read -p "Please Enter your folder: " folder_name
+                    if [[ $folder_name =~ ^[a-zA-Z0-9_]+$ ]]; then
+                        if [ -d "$folder_name" ]; then
+                        echo "Folder already exists"
+                        else  
+                        echo "Your submitted folder name: $folder_name"
+                        break
+                        fi
+                    else
+                    echo "Invalid input. Please enter a valid folder name."
+                    fi
+                done
+                while true; do
+                    read -p "Please Enter your git url: " git_url
+                    if [[ -z "$git_url" ]]; then
+                        echo "Invalid input. Please enter a non-empty git url."
+                    else
+                        echo "Your submitted git url: $git_url"
+                        break
+                    fi
+                done
+                clone_repo "$name" "$git_url"
+                break
+                ;;
+            "${options[4]}")
                 exit 0
                 ;;
             *) echo "Invalid option";;
