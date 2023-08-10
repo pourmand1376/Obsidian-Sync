@@ -189,7 +189,7 @@ while true; do
                         break
                     fi
                 done
-                base_name=$(basename "$git_url")
+                base_name=$(basename $git_url)
                 folder_name=${base_name%.*}
                 clone_repo "$folder_name" "$git_url"
                 break
