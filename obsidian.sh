@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.3.1"
+echo "Script Version 0.2.3.2"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -203,7 +203,7 @@ while true; do
                 folders=()
                 i=1
                 for dir in $HOME_PATH/*; do
-                    if [ -d $HOME_PATH/$dir ]; then
+                    if [ -d "$HOME_PATH/$dir" ]; then
                         #if git -C "$HOME_PATH/$dir" status &> /dev/null
                         #then
                             folders+=("$dir")
