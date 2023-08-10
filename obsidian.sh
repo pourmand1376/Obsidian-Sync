@@ -59,7 +59,7 @@ clone_repo() {
 
   cd "$HOME_PATH/"
   mkdir -p "$HOME_PATH/$folder"
-  git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url" 
+  echo 'git --git-dir "$HOME_PATH/$folder" --work-tree "$HOME_PATH/storage/downloads/$folder" clone "$git_url"'
 
 }
 
