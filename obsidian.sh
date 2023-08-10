@@ -60,8 +60,7 @@ clone_repo() {
 
   cd "$HOME_PATH/"
   mkdir -p "$HOME_PATH/$folder"
-  git --git-dir "$HOME_PATH/$folder" --work-tree "$DOWNLOAD_FOLDER/$folder" clone "$git_url"
-
+  echo "git --git-dir "$HOME_PATH/$folder" --work-tree "$DOWNLOAD_FOLDER/$folder" clone "$git_url""
 }
 
 # add gitignore file
