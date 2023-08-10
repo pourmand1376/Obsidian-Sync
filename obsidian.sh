@@ -1,12 +1,17 @@
 #!/bin/bash
 
 # Define functions for each menu option
-function list_files {
-    ls
+function install_required_deps()
+{
+apt update
+apt upgrade -y
+pkg install openssh -y
+pkg install git -y
 }
 
-function display_system_info {
-    uname -a
+function access_storage()
+{
+termux-setup-storage
 }
 
 function list_processes {
@@ -18,8 +23,8 @@ while true; do
     PS3='Please enter your choice: '
 
     options=(
-        "List files in current directory"
-        "Display system info" 
+        "Install Required Dependencies"
+        "Give Access to Storage" 
         "List running processes"
         "Quit"
     )
