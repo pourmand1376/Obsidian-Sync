@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.3.8"
+echo "Script Version 0.3.9"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -235,6 +235,7 @@ function create_alias_and_git_scripts()
 {
 touch "$HOME_PATH/.bashrc"
 touch "$HOME_PATH/.obsidian"
+chmod +x "$HOME_PATH/.obsidian"
 touch "$HOME_PATH/.profile"
 # append this to file only if it is not already there
 write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian"
