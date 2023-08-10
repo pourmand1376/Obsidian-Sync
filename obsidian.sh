@@ -33,11 +33,11 @@ while true; do
     do
         case $opt in
             "${options[0]}")
-                list_files
+                install_required_deps
                 break
                 ;;
             "${options[1]}")
-                display_system_info
+                termux-setup-storage
                 break
                 ;;
             "${options[2]}")
