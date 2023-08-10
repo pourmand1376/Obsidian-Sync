@@ -8,17 +8,17 @@ DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
 OBSIDIAN_SCRIPT="
 function sync_obsidian
 {
-cd \"$1\"
-git add .
-git commit -m \"Android Commit\"
-git fetch
-git merge --no-edit
-git add .
-git commit -m \"automerge android\"
-git push
-echo \"Sync is finished\"
-sleep 2
-    }
+    cd "$1"
+    git add .
+    git commit -m "Android Commit"
+    git fetch
+    git merge --no-edit
+    git add .
+    git commit -m "automerge android"
+    git push
+    echo "Sync is finished"
+    sleep 1
+}
 "
 
 # Define functions for each menu option
