@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.2.3.5"
+echo "Script Version 0.2.3.6"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -112,8 +112,7 @@ remove_files_from_git()
 
     FILES=".obsidian/workspace
     .obsidian/workspace.json
-    .obsidian/workspace-mobile.json
-    .obsidian/app.json"
+    .obsidian/workspace-mobile.json"
 
     for file in $FILES; do
         if [ -f "$file" ]; then
@@ -129,6 +128,7 @@ remove_files_from_git()
 }
 
 
+
 # Main menu loop
 while true; do
     PS3='Please enter your choice: '
@@ -139,6 +139,7 @@ while true; do
         "Configure Git and Create SSH Key"
         "Clone Obsidian Git Repo in Termux"
         "Optimize repository for multi-device use"
+        "Create Scripts and git commit scripts"
         "Quit"
     )
 
@@ -232,6 +233,28 @@ while true; do
                 break
                 ;;
             "${options[5]}")
+                echo "Creating Alias and git commit scripts"
+                folders=()
+                i=1
+                for dir in $HOME_PATH/*; do
+                    if [ -d "$dir" ]; then
+                        if git -C "$dir" status &> /dev/null
+                        then
+                            folder_name=$(basename "$dir")
+                            folders+=("$folder_name")
+                            echo "$i) $folder_name"
+                            ((i++))
+                        fi
+                    fi
+                done
+                echo "Now which repository do you want to create scripts for?"
+                echo "Select a folder:"
+                read choice
+                folder="${folders[$choice-1]}"
+                echo "You selected $folder"
+                break
+                ;;
+            "${options[6]}")
                 exit 0
                 ;;
             *) echo "Invalid option" ;;
