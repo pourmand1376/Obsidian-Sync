@@ -1,6 +1,5 @@
 repos:
-- repo: https://github.com/lovesegfault/beautysh
-  rev: v6.2.1
-  hooks:
-    - id: beautysh
-      args: ["obsidian.sh"]
+  - repo: https://github.com/lovesegfault/beautysh
+    rev: v6.2.1
+    hooks:
+      - id: beautysh
