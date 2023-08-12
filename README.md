@@ -1,5 +1,7 @@
 # Obsidian-Sync
 
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/pourmand1376/Obsidian-Sync/pre-commit.yaml)
+
 Obsidian Sync with Android
 
 This script is written for the Termux application.
