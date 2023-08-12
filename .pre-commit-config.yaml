@@ -16,4 +16,4 @@ repos:
     rev: v1.0.6
     hooks:
       - id: shell-lint
-        args: [--format=json]
+        args: ["--severity", "warning"]

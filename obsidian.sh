@@ -161,7 +161,7 @@ fi
 function configure_git_and_ssh_keys()
 {
 while true; do
-    read -p "Please Enter your name: " name
+    read -r -p "Please Enter your name: " name
     if [[ -z "$name" ]]; then
         echo "Invalid input. Please enter a non-empty name."
     else
@@ -170,7 +170,7 @@ while true; do
     fi
 done
 while true; do
-    read -p "Please Enter your Email: " email
+    read -r -p "Please Enter your Email: " email
     if [[ $email =~ ^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$ ]]; then
         echo "Your submitted email: $email"
         break
@@ -186,7 +186,7 @@ function clone_obsidian_repo()
 {
 while true; do
     echo "Please Enter your git url: "
-    read git_url
+    read -r git_url
     if [[ -z "$git_url" ]]; then
         echo "Invalid input. Please enter a non-empty git url."
     else
@@ -215,7 +215,7 @@ for dir in "$HOME_PATH"/*; do
 done
 echo "Now which repository do you want to optimize?"
 echo "Select a folder:"
-read choice
+read -r choice
 folder="${folders[$choice-1]}"
 echo "You selected $folder"
 if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
@@ -258,11 +258,11 @@ for dir in "$HOME_PATH"/*; do
 done
 echo "Now which repository do you want to create scripts for?"
 echo "Select a folder:"
-read choice
+read -r choice
 folder="${folders[$choice-1]}"
 echo "You selected $folder"
 echo "What do you want your alias to be?"
-read alias
+read -r alias
 echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
 write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
 echo "alias $alias created in .$folder"
