@@ -266,7 +266,7 @@ read alias
 echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
 write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
 echo "alias $alias created in .$folder"
-echo "You should exit the program to see the changes"
+echo "You should exit the program for changes to take effect."
 }
 # Main menu loop
 while true; do
