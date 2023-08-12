@@ -3,4 +3,12 @@ repos:
     rev: v6.2.1
     hooks:
       - id: beautysh
-        args: ["Obsidian.sh"]
+        args:
+          [
+            "--indent-size",
+            "2",
+            "--force-function-style",
+            "fnpar",
+            "--tab",
+            "obsidian.sh",
+          ]
