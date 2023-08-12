@@ -64,7 +64,7 @@ generate_ssh_key() {
     echo "------------"
     cat $HOME_PATH/.ssh/id_ed25519.pub
     echo "------------"
-    eval $(ssh-agent -s)
+    eval "$(ssh-agent -s)"
     ssh-add
 }
 
@@ -75,18 +75,18 @@ clone_repo() {
     echo "Obsidian Folder: $DOWNLOAD_FOLDER/$folder"
     echo "Git Url: $git_url"
 
-    cd "$HOME_PATH/"
+    cd "$HOME_PATH/" || { echo "Failure while changing directory into $HOME_PATH"; exit 1; }
     mkdir -p "$HOME_PATH/$folder"
 
     git --git-dir "$HOME_PATH/$folder" --work-tree "$DOWNLOAD_FOLDER/$folder" clone "$git_url"
-    cd "$HOME_PATH/$folder"
+    cd "$HOME_PATH/$folder" || { echo "Failure while changing directory into $HOME_PATH/$folder"; exit 1; }
     git worktree add --checkout "$DOWNLOAD_FOLDER/$folder" --force
 }
 
 # add gitignore file
 add_gitignore_entries() {
     folder_name="$1"
-    cd "$DOWNLOAD_FOLDER/$folder_name"
+    cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
     GITIGNORE=".gitignore"
 
 ENTRIES=".trash/
@@ -108,7 +108,7 @@ done
 
 add_gitattributes_entry() {
 folder_name="$1"
-cd "$DOWNLOAD_FOLDER/$folder_name"
+cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
 GITATTRIBUTES=".gitattributes"
 ENTRY="*.md merge=union"
 
@@ -125,7 +125,7 @@ fi
 remove_files_from_git()
 {
 folder_name="$1"
-cd "$DOWNLOAD_FOLDER/$folder_name"
+cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
 
 FILES=".obsidian/workspace
 .obsidian/workspace.json
@@ -133,11 +133,11 @@ FILES=".obsidian/workspace
 
 for file in $FILES; do
     if [ -f "$file" ]; then
-        cd "$HOME_PATH/$folder_name"
+        cd "$HOME_PATH/$folder_name" || { echo "Failure while changing directory into $HOME_PATH/$folder_name"; exit 1; }
         git rm --cached "$file"
     fi
 done
-cd "$HOME_PATH/$folder_name"
+cd "$HOME_PATH/$folder_name" || { echo "Failure while changing directory into $HOME_PATH/$folder_name"; exit 1; }
 if git status | grep "new file" ; then
     git commit -am "Remove ignored files"
 fi
@@ -194,7 +194,7 @@ while true; do
         break
     fi
 done
-base_name=$(basename $git_url)
+base_name=$(basename "$git_url")
 folder_name=${base_name%.*}
 clone_repo "$folder_name" "$git_url"
 }
@@ -202,7 +202,7 @@ function optimize_repo_for_mobile()
 {
 folders=()
 i=1
-for dir in $HOME_PATH/*; do
+for dir in "$HOME_PATH"/*; do
     if [ -d "$dir" ]; then
         if git -C "$dir" status &> /dev/null
         then
@@ -245,7 +245,7 @@ write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
 
 folders=()
 i=1
-for dir in $HOME_PATH/*; do
+for dir in "$HOME_PATH"/*; do
     if [ -d "$dir" ]; then
         if git -C "$dir" status &> /dev/null
         then
