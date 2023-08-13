@@ -1,25 +1,10 @@
 #!/bin/bash
-echo "Script Version 0.4.1.3"
+echo "Script Version 0.4.1.4"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
 DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
 
-OBSIDIAN_SCRIPT='
-function sync_obsidian()
-{
-	cd "$1" || { echo "Failure while changing directory into $1"; exit 1; }
-	git add .
-	git commit -m "Android Commit"
-	git fetch
-	git merge --no-edit
-	git add .
-	git commit -m "automerge android"
-	git push
-	echo "Sync is finished"
-	sleep 2
-}
-'
 
 # Define functions for each menu option
 function install_required_deps()
@@ -268,6 +253,26 @@ write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
 echo "alias $alias created in .$folder"
 echo "You should exit the program for changes to take effect."
 }
+
+# shellcheck disable=SC2016
+
+OBSIDIAN_SCRIPT='
+function sync_obsidian()
+{
+	cd "$1" || { echo "Failure while changing directory into $1"; exit 1; }
+	git add .
+	git commit -m "Android Commit"
+	git fetch
+	git merge --no-edit
+	git add .
+	git commit -m "automerge android"
+	git push
+	echo "Sync is finished"
+	sleep 2
+}
+'
+
+
 # Main menu loop
 while true; do
 PS3='Please enter your choice: '
