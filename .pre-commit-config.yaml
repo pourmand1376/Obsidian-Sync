@@ -12,7 +12,7 @@ repos:
             "--tab",
             "obsidian.sh",
           ]
-  - repo: https://github.com/detailyang/pre-commit-shell
-    rev: v1.0.6
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.22
     hooks:
-      - id: shell-lint
+      - id: shellcheck
