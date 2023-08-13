@@ -6,10 +6,9 @@ repos:
         args:
           [
             "--indent-size",
-            "1",
+            "4",
             "--force-function-style",
             "fnpar",
-            "--tab",
             "obsidian.sh",
           ]
   - repo: https://github.com/detailyang/pre-commit-shell
