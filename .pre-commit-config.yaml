@@ -6,7 +6,7 @@ repos:
         args:
           [
             "--indent-size",
-            "2",
+            "1",
             "--force-function-style",
             "fnpar",
             "--tab",
