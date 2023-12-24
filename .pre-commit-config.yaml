@@ -11,7 +11,11 @@ repos:
             "fnpar",
             "obsidian.sh",
           ]
-  - repo: https://github.com/detailyang/pre-commit-shell
-    rev: v1.0.6
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.9.0
     hooks:
-      - id: shell-lint
+    - id: shellcheck
+      args: ["--severity=warning"]  # Optionally only show errors and warnings
+
+default_language_version:
+    python: python3.10
