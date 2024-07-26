@@ -257,18 +257,53 @@ function create_alias_and_git_scripts()
 # shellcheck disable=SC2016
 
 OBSIDIAN_SCRIPT='
-function sync_obsidian()
+function sync_obsidian
 {
-    cd "$1" || { echo "Failure while changing directory into $1"; exit 1; }
+    set -euo pipefail
+
+    if [ -z "${1:-}" ]; then
+        echo "Error: No directory specified. Usage: sync_obsidian <directory>" >&2
+        return 1
+    fi
+
+    echo "Starting Obsidian sync for directory: $1"
+    cd "$1" || { echo "Failed to change directory to $1" >&2; return 1; }
+
+    echo "Adding changes..."
     git add .
-    git commit -m "Android Commit"
-    git fetch
-    git merge --no-edit
+
+    echo "Committing changes..."
+    git commit -m "Android Commit" || echo "No changes to commit"
+
+    echo "Fetching remote changes..."
+    if ! git fetch; then
+        echo "Failed to fetch remote changes" >&2
+        return 1
+    fi
+
+    echo "Attempting to merge changes..."
+    if ! git merge --no-edit; then
+        echo "Merge failed. Here are the details:" >&2
+        git status
+        echo "You may need to resolve conflicts manually." >&2
+        return 1
+    fi
+
+    echo "Adding any merge results..."
     git add .
-    git commit -m "automerge android"
-    git push
-    echo "Sync is finished"
-    sleep 2
+
+    echo "Committing merge results..."
+    git commit -m "automerge android" || echo "No merge changes to commit"
+
+    echo "Pushing changes..."
+    if ! git push; then
+        echo "Push failed. Here are the details:" >&2
+        git status
+        echo "You may need to pull changes first or resolve conflicts." >&2
+        return 1
+    fi
+
+    echo "Sync is finished successfully for $1"
 }
 '
 
