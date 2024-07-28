@@ -257,7 +257,7 @@ function create_alias_and_git_scripts()
 # shellcheck disable=SC2016
 
 OBSIDIAN_SCRIPT='
-function sync_obsidian
+function sync_obsidian()
 {
     set -euo pipefail
 
