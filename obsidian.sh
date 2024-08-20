@@ -112,9 +112,9 @@ function remove_files_from_git()
     folder_name="$1"
     cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
 
-    FILES=".obsidian/workspace
-    .obsidian/workspace.json
-    .obsidian/workspace-mobile.json"
+    FILES="$HOME_PATH/$folder_name/.obsidian/workspace
+    $HOME_PATH/$folder_name/.obsidian/workspace.json
+    $HOME_PATH/$folder_name/.obsidian/workspace-mobile.json"
 
     for file in $FILES; do
         if [ -f "$file" ]; then
