@@ -120,6 +120,7 @@ function remove_files_from_git()
         if [ -f "$file" ]; then
             cd "$HOME_PATH/$folder_name" || { echo "Failure while changing directory into $HOME_PATH/$folder_name"; exit 1; }
             git rm --cached "$file"
+            echo "removed $file from git"
         fi
     done
     cd "$HOME_PATH/$folder_name" || { echo "Failure while changing directory into $HOME_PATH/$folder_name"; exit 1; }
