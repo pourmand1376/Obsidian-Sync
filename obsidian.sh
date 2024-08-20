@@ -112,19 +112,19 @@ function remove_files_from_git()
     folder_name="$1"
     cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
 
-    FILES="$HOME_PATH/$folder_name/.obsidian/workspace
-    $HOME_PATH/$folder_name/.obsidian/workspace.json
-    $HOME_PATH/$folder_name/.obsidian/workspace-mobile.json"
+    FILES=".obsidian/workspace
+    .obsidian/workspace.json
+    .obsidian/workspace-mobile.json"
 
     for file in $FILES; do
         if [ -f "$file" ]; then
             cd "$HOME_PATH/$folder_name" || { echo "Failure while changing directory into $HOME_PATH/$folder_name"; exit 1; }
-            git rm --cached "$file"
+            git rm -f --cached "$DOWNLOAD_FOLDER/$folder_name/$file"
             echo "removed $file from git"
         fi
     done
     cd "$HOME_PATH/$folder_name" || { echo "Failure while changing directory into $HOME_PATH/$folder_name"; exit 1; }
-    if git status | grep "new file" ; then
+    if [[ `git status --porcelain` ]] ; then
         git commit -am "Remove ignored files"
     fi
 
