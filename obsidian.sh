@@ -369,7 +369,41 @@ function optimize_repo_for_mobile() {
     fi
 }
 
-
+function create_alias_and_git_scripts() {
+    execute_and_log "touch \"$HOME_PATH/.bashrc\"" "Creating .bashrc"
+    execute_and_log "touch \"$HOME_PATH/.obsidian\"" "Creating .obsidian"
+    execute_and_log "chmod +x \"$HOME_PATH/.obsidian\"" "Making .obsidian executable"
+    execute_and_log "touch \"$HOME_PATH/.profile\"" "Creating .profile"
+    
+    write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian"
+    write_to_file_if_not_exists "source $HOME_PATH/.obsidian" "$HOME_PATH/.profile"
+    write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
+    
+    local folders=()
+    local i=1
+    for dir in "$HOME_PATH"/*; do
+        if [ -d "$dir" ]; then
+            if git -C "$dir" status &> /dev/null
+            then
+                folder_name=$(basename "$dir")
+                folders+=("$folder_name")
+                echo "$i) $folder_name"
+                ((i++))
+            fi
+        fi
+    done
+    echo "Now which repository do you want to create scripts for?"
+    echo "Select a folder:"
+    read -r choice
+    folder="${folders[$choice-1]}"
+    echo "You selected $folder"
+    echo "What do you want your alias to be?"
+    read -r alias
+    echo "alias $alias='sync_obsidian $HOME_PATH/$folder'" > "$HOME_PATH/.$folder"
+    write_to_file_if_not_exists "source $HOME_PATH/.$folder"  "$HOME_PATH/.profile"
+    echo "alias $alias created in .$folder"
+    echo "You should exit the program for changes to take effect."
+}
 # Modified sync_obsidian function with command output logging
 OBSIDIAN_SCRIPT='
 function sync_obsidian()
