@@ -6,8 +6,6 @@ HOME_PATH="/data/data/com.termux/files/home"
 DOWNLOAD_FOLDER="$HOME_PATH/storage/shared/Download"
 
 
-#!/bin/bash
-
 # Add these variables at the beginning of your script, after the existing variables
 LOG_DIR="$HOME_PATH/logs"
 CURRENT_DATE=$(date +%Y-%m-%d)
