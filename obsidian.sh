@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.4.4"
+echo "Script Version 0.4.5"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -96,22 +96,15 @@ function install_required_deps() {
     
     execute_and_log "apt update" "Running apt update"
     execute_and_log "apt upgrade -y" "Running apt upgrade"
-    
-    log_message "INFO" "Installing openssh"
-    if execute_and_log "pkg install openssh -y" "Installing openssh"; then
-        log_message "SUCCESS" "Successfully installed openssh"
-    else
-        log_message "ERROR" "Failed to install openssh"
-    fi
-    
-    log_message "INFO" "Installing git"
-    if execute_and_log "pkg install git -y" "Installing git"; then
-        log_message "SUCCESS" "Successfully installed git"
-    else
-        log_message "ERROR" "Failed to install git"
-    fi
+    execute_and_log "pkg install openssh -y" "Installing openssh"
+    execute_and_log "pkg install git -y" "Installing git"
     
     log_message "SUCCESS" "Completed installation of required dependencies"
+}
+
+function access_storage() {
+    log_message "INFO" "Setting up Termux storage access"
+    execute_and_log "termux-setup-storage" "Setting up storage access"
 }
 
 function configure_git() {
@@ -191,6 +184,191 @@ function clone_repo() {
         return 1
     fi
 }
+
+function add_gitignore_entries() {
+    local folder_name="$1"
+    
+    if ! execute_and_log "cd \"$DOWNLOAD_FOLDER/$folder_name\"" "Changing to repository directory"; then
+        log_message "ERROR" "Failed to change directory to $DOWNLOAD_FOLDER/$folder_name"
+        return 1
+    fi
+    
+    local GITIGNORE=".gitignore"
+    local ENTRIES=".trash/
+    .obsidian/workspace
+    .obsidian/workspace.json
+    .obsidian/workspace-mobile.json"
+    
+    if [ ! -f "$GITIGNORE" ]; then
+        execute_and_log "touch $GITIGNORE" "Creating .gitignore file"
+    fi
+    
+    log_message "INFO" "Adding entries to .gitignore"
+    for entry in $ENTRIES; do
+        if ! grep -q -Fx "$entry" "$GITIGNORE"; then
+            execute_and_log "echo \"$entry\" >> $GITIGNORE" "Adding $entry to .gitignore"
+        fi
+    done
+    
+    log_message "SUCCESS" "Updated .gitignore file"
+}
+
+function add_gitattributes_entry() {
+    local folder_name="$1"
+    
+    if ! execute_and_log "cd \"$DOWNLOAD_FOLDER/$folder_name\"" "Changing to repository directory"; then
+        log_message "ERROR" "Failed to change directory to $DOWNLOAD_FOLDER/$folder_name"
+        return 1
+    fi
+    
+    local GITATTRIBUTES=".gitattributes"
+    local ENTRY="*.md merge=union"
+    
+    if [ ! -f "$GITATTRIBUTES" ]; then
+        execute_and_log "touch $GITATTRIBUTES" "Creating .gitattributes file"
+    fi
+    
+    if ! grep -q -F "$ENTRY" "$GITATTRIBUTES"; then
+        execute_and_log "echo \"$ENTRY\" >> $GITATTRIBUTES" "Adding merge=union entry"
+    }
+    
+    log_message "SUCCESS" "Updated .gitattributes file"
+}
+
+function remove_files_from_git() {
+    local folder_name="$1"
+    
+    log_message "INFO" "Removing specified files from git tracking"
+    
+    if ! execute_and_log "cd \"$DOWNLOAD_FOLDER/$folder_name\"" "Changing to repository directory"; then
+        log_message "ERROR" "Failed to change directory to $DOWNLOAD_FOLDER/$folder_name"
+        return 1
+    fi
+    
+    local FILES=".obsidian/workspace
+    .obsidian/workspace.json
+    .obsidian/workspace-mobile.json"
+    
+    for file in $FILES; do
+        if [ -f "$file" ]; then
+            if ! execute_and_log "cd \"$HOME_PATH/$folder_name\"" "Changing to git directory"; then
+                log_message "ERROR" "Failed to change directory to $HOME_PATH/$folder_name"
+                return 1
+            fi
+            execute_and_log "git rm -f --cached \"$DOWNLOAD_FOLDER/$folder_name/$file\"" "Removing $file from git"
+            log_message "SUCCESS" "Removed $file from git tracking"
+        fi
+    done
+    
+    if ! execute_and_log "cd \"$HOME_PATH/$folder_name\"" "Changing to git directory"; then
+        log_message "ERROR" "Failed to change directory to $HOME_PATH/$folder_name"
+        return 1
+    fi
+    
+    if [[ $(git status --porcelain) ]]; then
+        execute_and_log "git commit -am \"Remove ignored files\"" "Committing removed files"
+    fi
+}
+
+function write_to_file_if_not_exists() {
+    local content="$1"
+    local file="$2"
+    
+    if [ ! -f "$file" ]; then
+        execute_and_log "touch \"$file\"" "Creating file $file"
+        log_message "SUCCESS" "Created file $file"
+    }
+    
+    if ! grep -qxF "$content" "$file"; then
+        execute_and_log "echo \"$content\" >> \"$file\"" "Adding content to $file"
+        log_message "SUCCESS" "Added scripts to $file"
+    }
+}
+
+function configure_git_and_ssh_keys() {
+    local name=""
+    local email=""
+    
+    while true; do
+        read -r -p "Please Enter your name: " name
+        if [[ -z "$name" ]]; then
+            log_message "ERROR" "Invalid input. Please enter a non-empty name."
+        else
+            log_message "INFO" "Your submitted name: $name"
+            break
+        fi
+    done
+    
+    while true; do
+        read -r -p "Please Enter your Email: " email
+        if [[ $email =~ ^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$ ]]; then
+            log_message "INFO" "Your submitted email: $email"
+            break
+        else
+            log_message "ERROR" "Invalid input. Please enter a valid email."
+        fi
+    done
+    
+    log_message "INFO" "Starting git and SSH configuration"
+    configure_git "$name" "$email"
+    generate_ssh_key "$email"
+}
+
+function clone_obsidian_repo() {
+    local git_url=""
+    
+    while true; do
+        read -r -p "Please Enter your git url: " git_url
+        if [[ -z "$git_url" ]]; then
+            log_message "ERROR" "Invalid input. Please enter a non-empty git url."
+        else
+            log_message "INFO" "Your submitted git url: $git_url"
+            break
+        fi
+    done
+    
+    base_name=$(basename "$git_url")
+    folder_name=${base_name%.*}
+    clone_repo "$folder_name" "$git_url"
+}
+
+function optimize_repo_for_mobile() {
+    local folders=()
+    local i=1
+    
+    log_message "INFO" "Scanning for git repositories"
+    
+    for dir in "$HOME_PATH"/*; do
+        if [ -d "$dir" ]; then
+            if git -C "$dir" status &> /dev/null; then
+                folder_name=$(basename "$dir")
+                folders+=("$folder_name")
+                log_message "OUTPUT" "$i) $folder_name"
+                ((i++))
+            fi
+        fi
+    done
+    
+    log_message "INFO" "Select a folder to optimize:"
+    read -r choice
+    
+    folder="${folders[$choice-1]}"
+    log_message "INFO" "Selected folder: $folder"
+    
+    if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
+        if git -C "$HOME_PATH/$folder" status &> /dev/null; then
+            add_gitignore_entries "$folder"
+            add_gitattributes_entry "$folder"
+            remove_files_from_git "$folder"
+            log_message "SUCCESS" "Repository optimization completed"
+        else
+            log_message "ERROR" "The $folder folder is not a Git repository"
+        fi
+    else
+        log_message "ERROR" "Folder $DOWNLOAD_FOLDER/$folder doesn't exist. You should clone the repo again."
+    fi
+}
+
 
 # Modified sync_obsidian function with command output logging
 OBSIDIAN_SCRIPT='
