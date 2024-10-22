@@ -26,7 +26,7 @@ function init_logging() {
         log_message "INFO" "Started new log file for $CURRENT_DATE"
     fi
 }
-init_logging
+
 
 # Function to log messages and show them to user
 function log_message() {
@@ -53,6 +53,8 @@ function log_message() {
             ;;
     esac
 }
+
+init_logging
 
 # Function to execute command and log its output
 function execute_and_log() {
