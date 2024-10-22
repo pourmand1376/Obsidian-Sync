@@ -66,18 +66,27 @@ function execute_and_log() {
     echo "[$timestamp] [COMMAND] $command" >> "$LOG_FILE"
     echo "[$timestamp] [OUTPUT-START]" >> "$LOG_FILE"
     
-    # Execute command and capture output
-    output=$($command 2>&1)
-    exit_code=$?
+    # Execute command and stream output in real-time
+    # Use a temporary file to capture exit code
+    local exit_file=$(mktemp)
     
-    # Log the output
-    echo "$output" >> "$LOG_FILE"
-    echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$LOG_FILE"
+    # Use tee to both display and log output in real-time
+    # Wrap the command in a subshell to capture its exit code
+    (eval "$command" 2>&1 || echo $? > "$exit_file") | while IFS= read -r line; do
+        # Write to log file
+        echo "$line" >> "$LOG_FILE"
+        # Show output to user with yellow color
+        echo -e "${YELLOW}$line${NC}"
+    done
     
-    # Show output to user
-    if [ -n "$output" ]; then
-        log_message "OUTPUT" "$output"
+    # Get the exit code
+    exit_code=0
+    if [ -f "$exit_file" ]; then
+        exit_code=$(cat "$exit_file")
+        rm "$exit_file"
     fi
+    
+    echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$LOG_FILE"
     
     return $exit_code
 }
@@ -223,24 +232,33 @@ function sync_obsidian()
     }
     
     function execute_sync() {
-        local command="$1"
-        local description="$2"
-        local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
-        
-        echo "[$timestamp] [COMMAND] $command" >> "$log_file"
-        echo "[$timestamp] [OUTPUT-START]" >> "$log_file"
-        
-        output=$($command 2>&1)
-        exit_code=$?
-        
-        echo "$output" >> "$log_file"
-        echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$log_file"
-        
-        if [ -n "$output" ]; then
-            log_sync "OUTPUT" "$output"
-        fi
-        
-        return $exit_code
+    local command="$1"
+    local description="$2"
+    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    
+    echo "[$timestamp] [COMMAND] $command" >> "$log_file"
+    echo "[$timestamp] [OUTPUT-START]" >> "$log_file"
+    
+    # Execute command and stream output in real-time
+    local exit_file=$(mktemp)
+    
+    (eval "$command" 2>&1 || echo $? > "$exit_file") | while IFS= read -r line; do
+        # Write to log file
+        echo "$line" >> "$log_file"
+        # Show output to user with yellow color
+        echo -e "${YELLOW}$line${NC}"
+    done
+    
+    # Get the exit code
+    exit_code=0
+    if [ -f "$exit_file" ]; then
+        exit_code=$(cat "$exit_file")
+        rm "$exit_file"
+    fi
+    
+    echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$log_file"
+    
+    return $exit_code
     }
     
     if [ -z "${1:-}" ]; then
