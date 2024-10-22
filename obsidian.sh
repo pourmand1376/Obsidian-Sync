@@ -32,11 +32,12 @@ function init_logging() {
 function log_message() {
     local level="$1"
     local message="$2"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
     # Write to log file with timestamp
     echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
-    
+
     # Echo to user without timestamp, but with colors
     case "$level" in
         "ERROR")
@@ -60,16 +61,18 @@ init_logging
 function execute_and_log() {
     local command="$1"
     local description="$2"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
     log_message "INFO" "Executing: $description"
     echo "[$timestamp] [COMMAND] $command" >> "$LOG_FILE"
     echo "[$timestamp] [OUTPUT-START]" >> "$LOG_FILE"
-    
+
     # Execute command and stream output in real-time
     # Use a temporary file to capture exit code
-    local exit_file=$(mktemp)
-    
+    local exit_file
+    exit_file=$(mktemp)
+
     # Use tee to both display and log output in real-time
     # Wrap the command in a subshell to capture its exit code
     (eval "$command" 2>&1 || echo $? > "$exit_file") | while IFS= read -r line; do
@@ -78,27 +81,27 @@ function execute_and_log() {
         # Show output to user with yellow color
         echo -e "${YELLOW}$line${NC}"
     done
-    
+
     # Get the exit code
     exit_code=0
     if [ -f "$exit_file" ]; then
         exit_code=$(cat "$exit_file")
         rm "$exit_file"
     fi
-    
+
     echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$LOG_FILE"
-    
+
     return $exit_code
 }
 
 function install_required_deps() {
     log_message "INFO" "Starting installation of required dependencies"
-    
+
     execute_and_log "apt update" "Running apt update"
     execute_and_log "apt upgrade -y" "Running apt upgrade"
     execute_and_log "pkg install openssh -y" "Installing openssh"
     execute_and_log "pkg install git -y" "Installing git"
-    
+
     log_message "SUCCESS" "Completed installation of required dependencies"
 }
 
@@ -110,9 +113,9 @@ function access_storage() {
 function configure_git() {
     local name="$1"
     local email="$2"
-    
+
     log_message "INFO" "Configuring git for user: $name with email: $email"
-    
+
     execute_and_log "git config --global user.name \"$name\"" "Setting git username"
     execute_and_log "git config --global user.email \"$email\"" "Setting git email"
     execute_and_log "git config --global credential.helper store" "Setting credential helper"
@@ -120,14 +123,14 @@ function configure_git() {
     execute_and_log "git config --global --add safe.directory '*'" "Setting safe directory"
     execute_and_log "git config --global core.protectNTFS false" "Setting NTFS protection"
     execute_and_log "git config --global core.longpaths true" "Setting long paths"
-    
+
     log_message "SUCCESS" "Git configuration completed"
 }
 
 function generate_ssh_key() {
     local email="$1"
     log_message "INFO" "Generating SSH key for email: $email"
-    
+
     if [ ! -f $HOME_PATH/.ssh/id_ed25519 ]; then
         if execute_and_log "ssh-keygen -q -t ed25519 -N \"\" -f $HOME_PATH/.ssh/id_ed25519 -C \"$email\"" "Generating SSH key"; then
             log_message "SUCCESS" "Generated new SSH key"
@@ -138,11 +141,11 @@ function generate_ssh_key() {
     else
         log_message "INFO" "SSH key already exists"
     fi
-    
+
     log_message "INFO" "Starting ssh-agent"
     execute_and_log "eval \$(ssh-agent -s)" "Starting SSH agent"
     execute_and_log "ssh-add" "Adding SSH key to agent"
-    
+
     log_message "INFO" "Here is your SSH public key. You can paste it inside Github"
     echo "------------"
     execute_and_log "cat $HOME_PATH/.ssh/id_ed25519.pub" "Reading public key"
@@ -152,31 +155,31 @@ function generate_ssh_key() {
 function clone_repo() {
     local folder="$1"
     local git_url="$2"
-    
+
     log_message "INFO" "Starting repository clone"
     log_message "INFO" "Git Folder: $HOME_PATH/$folder"
     log_message "INFO" "Obsidian Folder: $DOWNLOAD_FOLDER/$folder"
     log_message "INFO" "Git URL: $git_url"
-    
+
     if ! execute_and_log "cd \"$HOME_PATH/\"" "Changing to home directory"; then
         log_message "ERROR" "Failed to change directory to $HOME_PATH"
         return 1
     fi
-    
+
     execute_and_log "mkdir -p \"$HOME_PATH/$folder\"" "Creating repository directory"
-    
+
     if execute_and_log "git --git-dir \"$HOME_PATH/$folder\" --work-tree \"$DOWNLOAD_FOLDER/$folder\" clone \"$git_url\"" "Cloning repository"; then
         log_message "SUCCESS" "Successfully cloned repository"
     else
         log_message "ERROR" "Failed to clone repository"
         return 1
     fi
-    
+
     if ! execute_and_log "cd \"$HOME_PATH/$folder\"" "Changing to repository directory"; then
         log_message "ERROR" "Failed to change directory to $HOME_PATH/$folder"
         return 1
     fi
-    
+
     if execute_and_log "git worktree add --checkout \"$DOWNLOAD_FOLDER/$folder\" --force" "Setting up git worktree"; then
         log_message "SUCCESS" "Successfully set up git worktree"
     else
@@ -187,68 +190,68 @@ function clone_repo() {
 
 function add_gitignore_entries() {
     local folder_name="$1"
-    
+
     if ! execute_and_log "cd \"$DOWNLOAD_FOLDER/$folder_name\"" "Changing to repository directory"; then
         log_message "ERROR" "Failed to change directory to $DOWNLOAD_FOLDER/$folder_name"
         return 1
     fi
-    
+
     local GITIGNORE=".gitignore"
     local ENTRIES=".trash/
     .obsidian/workspace
     .obsidian/workspace.json
     .obsidian/workspace-mobile.json"
-    
+
     if [ ! -f "$GITIGNORE" ]; then
         execute_and_log "touch $GITIGNORE" "Creating .gitignore file"
     fi
-    
+
     log_message "INFO" "Adding entries to .gitignore"
     for entry in $ENTRIES; do
         if ! grep -q -Fx "$entry" "$GITIGNORE"; then
             execute_and_log "echo \"$entry\" >> $GITIGNORE" "Adding $entry to .gitignore"
         fi
     done
-    
+
     log_message "SUCCESS" "Updated .gitignore file"
 }
 
 function add_gitattributes_entry() {
     local folder_name="$1"
-    
+
     if ! execute_and_log "cd \"$DOWNLOAD_FOLDER/$folder_name\"" "Changing to repository directory"; then
         log_message "ERROR" "Failed to change directory to $DOWNLOAD_FOLDER/$folder_name"
         return 1
     fi
-    
+
     local GITATTRIBUTES=".gitattributes"
     local ENTRY="*.md merge=union"
-    
+
     if [ ! -f "$GITATTRIBUTES" ]; then
         execute_and_log "touch $GITATTRIBUTES" "Creating .gitattributes file"
     fi
-    
+
     if ! grep -q -F "$ENTRY" "$GITATTRIBUTES"; then
         execute_and_log "echo \"$ENTRY\" >> $GITATTRIBUTES" "Adding merge=union entry"
-    }
-    
+    fi
+
     log_message "SUCCESS" "Updated .gitattributes file"
 }
 
 function remove_files_from_git() {
     local folder_name="$1"
-    
+
     log_message "INFO" "Removing specified files from git tracking"
-    
+
     if ! execute_and_log "cd \"$DOWNLOAD_FOLDER/$folder_name\"" "Changing to repository directory"; then
         log_message "ERROR" "Failed to change directory to $DOWNLOAD_FOLDER/$folder_name"
         return 1
     fi
-    
+
     local FILES=".obsidian/workspace
     .obsidian/workspace.json
     .obsidian/workspace-mobile.json"
-    
+
     for file in $FILES; do
         if [ -f "$file" ]; then
             if ! execute_and_log "cd \"$HOME_PATH/$folder_name\"" "Changing to git directory"; then
@@ -259,12 +262,12 @@ function remove_files_from_git() {
             log_message "SUCCESS" "Removed $file from git tracking"
         fi
     done
-    
+
     if ! execute_and_log "cd \"$HOME_PATH/$folder_name\"" "Changing to git directory"; then
         log_message "ERROR" "Failed to change directory to $HOME_PATH/$folder_name"
         return 1
     fi
-    
+
     if [[ $(git status --porcelain) ]]; then
         execute_and_log "git commit -am \"Remove ignored files\"" "Committing removed files"
     fi
@@ -273,22 +276,22 @@ function remove_files_from_git() {
 function write_to_file_if_not_exists() {
     local content="$1"
     local file="$2"
-    
+
     if [ ! -f "$file" ]; then
         execute_and_log "touch \"$file\"" "Creating file $file"
         log_message "SUCCESS" "Created file $file"
-    }
-    
+    fi
+
     if ! grep -qxF "$content" "$file"; then
         execute_and_log "echo \"$content\" >> \"$file\"" "Adding content to $file"
         log_message "SUCCESS" "Added scripts to $file"
-    }
+    fi
 }
 
 function configure_git_and_ssh_keys() {
     local name=""
     local email=""
-    
+
     while true; do
         read -r -p "Please Enter your name: " name
         if [[ -z "$name" ]]; then
@@ -298,7 +301,7 @@ function configure_git_and_ssh_keys() {
             break
         fi
     done
-    
+
     while true; do
         read -r -p "Please Enter your Email: " email
         if [[ $email =~ ^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$ ]]; then
@@ -308,7 +311,7 @@ function configure_git_and_ssh_keys() {
             log_message "ERROR" "Invalid input. Please enter a valid email."
         fi
     done
-    
+
     log_message "INFO" "Starting git and SSH configuration"
     configure_git "$name" "$email"
     generate_ssh_key "$email"
@@ -316,7 +319,7 @@ function configure_git_and_ssh_keys() {
 
 function clone_obsidian_repo() {
     local git_url=""
-    
+
     while true; do
         read -r -p "Please Enter your git url: " git_url
         if [[ -z "$git_url" ]]; then
@@ -326,7 +329,7 @@ function clone_obsidian_repo() {
             break
         fi
     done
-    
+
     base_name=$(basename "$git_url")
     folder_name=${base_name%.*}
     clone_repo "$folder_name" "$git_url"
@@ -335,9 +338,9 @@ function clone_obsidian_repo() {
 function optimize_repo_for_mobile() {
     local folders=()
     local i=1
-    
+
     log_message "INFO" "Scanning for git repositories"
-    
+
     for dir in "$HOME_PATH"/*; do
         if [ -d "$dir" ]; then
             if git -C "$dir" status &> /dev/null; then
@@ -348,13 +351,13 @@ function optimize_repo_for_mobile() {
             fi
         fi
     done
-    
+
     log_message "INFO" "Select a folder to optimize:"
     read -r choice
-    
+
     folder="${folders[$choice-1]}"
     log_message "INFO" "Selected folder: $folder"
-    
+
     if [ -d "$DOWNLOAD_FOLDER/$folder" ]; then
         if git -C "$HOME_PATH/$folder" status &> /dev/null; then
             add_gitignore_entries "$folder"
@@ -374,11 +377,11 @@ function create_alias_and_git_scripts() {
     execute_and_log "touch \"$HOME_PATH/.obsidian\"" "Creating .obsidian"
     execute_and_log "chmod +x \"$HOME_PATH/.obsidian\"" "Making .obsidian executable"
     execute_and_log "touch \"$HOME_PATH/.profile\"" "Creating .profile"
-    
+
     write_to_file_if_not_exists "$OBSIDIAN_SCRIPT" "$HOME_PATH/.obsidian"
     write_to_file_if_not_exists "source $HOME_PATH/.obsidian" "$HOME_PATH/.profile"
     write_to_file_if_not_exists "source $HOME_PATH/.profile" "$HOME_PATH/.bashrc"
-    
+
     local folders=()
     local i=1
     for dir in "$HOME_PATH"/*; do
@@ -404,28 +407,30 @@ function create_alias_and_git_scripts() {
     echo "alias $alias created in .$folder"
     echo "You should exit the program for changes to take effect."
 }
+# shellcheck disable=SC2016
+
 # Modified sync_obsidian function with command output logging
 OBSIDIAN_SCRIPT='
 function sync_obsidian()
 {
     set -euo pipefail
     local log_file="$HOME/logs/$(date +%Y-%m-%d).log"
-    
+
     # Colors for terminal output
     local RED="\033[0;31m"
     local GREEN="\033[0;32m"
     local BLUE="\033[0;34m"
     local YELLOW="\033[1;33m"
     local NC="\033[0m"
-    
+
     function log_sync() {
         local level="$1"
         local message="$2"
         local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
-        
+
         # Write to log file
         echo "[$timestamp] [$level] $message" >> "$log_file"
-        
+
         # Echo to user with colors
         case "$level" in
             "ERROR")
@@ -442,37 +447,37 @@ function sync_obsidian()
                 ;;
         esac
     }
-    
+
     function execute_sync() {
-    local command="$1"
-    local description="$2"
-    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
-    
-    echo "[$timestamp] [COMMAND] $command" >> "$log_file"
-    echo "[$timestamp] [OUTPUT-START]" >> "$log_file"
-    
-    # Execute command and stream output in real-time
-    local exit_file=$(mktemp)
-    
-    (eval "$command" 2>&1 || echo $? > "$exit_file") | while IFS= read -r line; do
-        # Write to log file
-        echo "$line" >> "$log_file"
-        # Show output to user with yellow color
-        echo -e "${YELLOW}$line${NC}"
-    done
-    
-    # Get the exit code
-    exit_code=0
-    if [ -f "$exit_file" ]; then
-        exit_code=$(cat "$exit_file")
-        rm "$exit_file"
-    fi
-    
-    echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$log_file"
-    
-    return $exit_code
+        local command="$1"
+        local description="$2"
+        local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+        echo "[$timestamp] [COMMAND] $command" >> "$log_file"
+        echo "[$timestamp] [OUTPUT-START]" >> "$log_file"
+
+        # Execute command and stream output in real-time
+        local exit_file=$(mktemp)
+
+        (eval "$command" 2>&1 || echo $? > "$exit_file") | while IFS= read -r line; do
+            # Write to log file
+            echo "$line" >> "$log_file"
+            # Show output to user with yellow color
+            echo -e "${YELLOW}$line${NC}"
+        done
+
+        # Get the exit code
+        exit_code=0
+        if [ -f "$exit_file" ]; then
+            exit_code=$(cat "$exit_file")
+            rm "$exit_file"
+        fi
+
+        echo "[$timestamp] [OUTPUT-END] (Exit Code: $exit_code)" >> "$log_file"
+
+        return $exit_code
     }
-    
+
     if [ -z "${1:-}" ]; then
         log_sync "ERROR" "No directory specified. Usage: sync_obsidian <directory>"
         return 1
