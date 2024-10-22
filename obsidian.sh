@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.4.3"
+echo "Script Version 0.4.4"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -28,6 +28,7 @@ function init_logging() {
         log_message "INFO" "Started new log file for $CURRENT_DATE"
     fi
 }
+init_logging()
 
 # Function to log messages and show them to user
 function log_message() {
