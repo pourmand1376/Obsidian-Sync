@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.4.3"
+echo "Script Version 0.4.8"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -91,21 +91,21 @@ function add_gitignore_entries() {
 
 }
 
-function add_gitattributes_entry() {
-    folder_name="$1"
-    cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
-    GITATTRIBUTES=".gitattributes"
-    ENTRY="*.md merge=union"
+# function add_gitattributes_entry() {
+#     folder_name="$1"
+#     cd "$DOWNLOAD_FOLDER/$folder_name" || { echo "Failure while changing directory into $DOWNLOAD_FOLDER/$folder_name"; exit 1; }
+#     GITATTRIBUTES=".gitattributes"
+#     ENTRY="*.md merge=union"
 
-    if [ ! -f "$GITATTRIBUTES" ]; then
-        touch "$GITATTRIBUTES"
-    fi
+#     if [ ! -f "$GITATTRIBUTES" ]; then
+#         touch "$GITATTRIBUTES"
+#     fi
 
-    if ! grep -q -F "$ENTRY" "$GITATTRIBUTES"; then
-        echo "$ENTRY" >> "$GITATTRIBUTES"
-    fi
+#     if ! grep -q -F "$ENTRY" "$GITATTRIBUTES"; then
+#         echo "$ENTRY" >> "$GITATTRIBUTES"
+#     fi
 
-}
+# }
 
 function remove_files_from_git()
 {
@@ -208,7 +208,7 @@ function optimize_repo_for_mobile()
         if git -C "$HOME_PATH/$folder" status &> /dev/null
         then
             add_gitignore_entries "$folder"
-            add_gitattributes_entry "$folder"
+            #add_gitattributes_entry "$folder"
             remove_files_from_git "$folder"
         else
             echo "The $folder folder is not a Git repository"
