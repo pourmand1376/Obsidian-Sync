@@ -270,7 +270,7 @@ function sync_obsidian()
     echo "Starting Obsidian sync for directory: $1"
     cd "$1" || { echo "Failed to change directory to $1" >&2; return 1; }
 
-    git pull --rebase
+    git pull --rebase --autostash
     git add --all
     git commit -m "mobile update"
     git pull --rebase
