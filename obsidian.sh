@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Script Version 0.4.8"
+echo "Script Version 0.4.9"
 echo "This script is used to facilitate configuration of git for obsidian. "
 
 HOME_PATH="/data/data/com.termux/files/home"
@@ -270,11 +270,11 @@ function sync_obsidian()
     echo "Starting Obsidian sync for directory: $1"
     cd "$1" || { echo "Failed to change directory to $1" >&2; return 1; }
 
-    git pull --rebase --autostash
-    git add --all
-    git commit -m "mobile update"
-    git pull --rebase
-    git push
+    git pull --rebase --autostash || echo "Nothing to pull"
+    git add --all || echo "Nothing to add"
+    git commit -m "mobile update" || echo "Nothing to commit"
+    git pull --rebase || echo "Nothing to pull"
+    git push || echo "Nothing to push"
 
     echo "Sync is finished successfully for $1"
 }
